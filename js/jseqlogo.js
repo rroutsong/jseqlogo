@@ -96,3 +96,30 @@ function sequence_logo(element, width, height, columns, options) {
 	ctx.restore();
 	return element;
 }
+
+function PWM2jseqcol(PWM) {
+	// Convert an array of position weight matrix
+	// to the column format used in jseqlogo, validates that nucleotide array are same length
+	//
+	// PWM format, ymax = 1: 
+	//		{ A: [0.5, 0.2, 0, 0], C: [0.5, 0.1, 0.8, 0], T: [0, 0.7, 0.2, 0.3], G: [0, 0, 0, 0.7] }
+	//
+	// jseqlogo format, ymax = 2:
+	//		[ 
+	//			[["A", 1.0], ["C", 1.0],  ["G", 0], ["T", 0]],
+  //      [["A", 0.4], ["C", 0.2], ["G", 0],  ["T", 1.4]],
+  //      [["A", 0], ["C", 1.6],  ["G", 0],  ["T", 0.4]],
+  //      [["A", 0], ["C", 0],  ["G", 1.4],  ["T", 0.6]],
+	//		]
+	var jseqcol = [];
+	if(PWM["A"].length == PWM["C"].length && PWM["C"].length == PWM["G"].length && PWM["G"].length == PWM["T"].length) {
+		for(i=0;i < PWM["A"].length; i++) {
+			var templist = [["A", (PWM["A"][i])*2], ["C", (PWM["C"][i]*2)], ["G", (PWM["G"][i]*2)], ["T", (PWM["T"][i]*2)]];
+			jseqcol.push(templist);
+		}
+			return jseqcol;
+		} else {
+			return null;
+		}
+	}
+}
