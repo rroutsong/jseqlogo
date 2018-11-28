@@ -78,6 +78,16 @@ function sequence_logo(element, width, height, columns, options) {
 		ctx.restore();
 		columnx += columndelta;
 	}
+	
+	// axis lines
+	ctx.beginPath();
+	ctx.moveTo((settings.border-(settings.padding*(2/3))), height-(settings.border-(settings.padding*(2/3))));
+	ctx.lineTo(width, height-(settings.border-(settings.padding*(2/3))));
+	ctx.stroke();
+	ctx.beginPath();
+	ctx.moveTo((settings.border-(settings.padding*(2/3)))+1, height-(settings.border-(settings.padding*(2/3))));
+	ctx.lineTo((settings.border-(settings.padding*(2/3)))+1, 0);
+	ctx.stroke();
 
 	// y-axis labels
 	ctx.fillStyle = settings.textcolor;
@@ -99,18 +109,19 @@ function sequence_logo(element, width, height, columns, options) {
 
 function PWM2jseqcol(PWM) {
 	// Convert an array of position weight matrix
-	// to the column format used in jseqlogo, validates that nucleotide array are same length
+	// to the column format used in jseqlogo, validates 
+	// that nucleotide array are same length
 	//
-	// PWM format, ymax = 1: 
-	//		{ A: [0.5, 0.2, 0, 0], C: [0.5, 0.1, 0.8, 0], T: [0, 0.7, 0.2, 0.3], G: [0, 0, 0, 0.7] }
+	// PWM format: 
+	//		{ A: [0.5, 0.2, 0, 0], C: [0.5, 0.1, 0.8, 0], T: [0, 0.7, 0.2, 0.3], G: [0, 0, 0, 0.7] };
 	//
-	// jseqlogo format, ymax = 2:
+	// jseqlogo format:
 	//		[ 
 	//			[["A", 1.0], ["C", 1.0],  ["G", 0], ["T", 0]],
   //      [["A", 0.4], ["C", 0.2], ["G", 0],  ["T", 1.4]],
   //      [["A", 0], ["C", 1.6],  ["G", 0],  ["T", 0.4]],
   //      [["A", 0], ["C", 0],  ["G", 1.4],  ["T", 0.6]],
-	//		]
+	//		];
 	var jseqcol = [];
 	if(PWM["A"].length == PWM["C"].length && PWM["C"].length == PWM["G"].length && PWM["G"].length == PWM["T"].length) {
 		for(i=0;i < PWM["A"].length; i++) {
@@ -118,8 +129,7 @@ function PWM2jseqcol(PWM) {
 			jseqcol.push(templist);
 		}
 			return jseqcol;
-		} else {
-			return null;
-		}
+	} else {
+		return null;
 	}
 }
