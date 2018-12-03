@@ -137,7 +137,7 @@ function PPM2jseqcol(PPM) {
 	//		];
 	var jseqcol = [];
 	if(PPM["A"].length == PPM["C"].length && PPM["C"].length == PPM["G"].length && PPM["G"].length == PPM["T"].length) {
-		for(i=0;i < PPM["A"].length; i++) {
+		for(i=0;i < PPM["A"].length;i++) {
 			var templist = [["A", PPM["A"][i]], ["C", PPM["C"][i]], ["G", PPM["G"][i]], ["T", PPM["T"][i]]];
 			jseqcol.push(templist);
 		}
@@ -145,4 +145,13 @@ function PPM2jseqcol(PPM) {
 	} else {
 		return null;
 	}
+}
+
+function revcompPPM(PPM) {
+	var bases = PPM.length-1;
+	var revcompPPM = [];
+	for(i=0;i <= bases;i++) {
+		revcompPPM[i] = [["A", PPM[bases-i][1][1]], ["C", PPM[bases-i][0][1]], ["G", PPM[bases-i][3][1]], ["T", PPM[bases-i][2][1]]];
+	}
+	return revcompPPM
 }
