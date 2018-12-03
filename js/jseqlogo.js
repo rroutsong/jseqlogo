@@ -15,12 +15,18 @@ function sequence_logo(element, width, height, columns, options) {
 		"letterfont": "30px Arial,sans-serif",
 		"fontpixelheight": 24,
 		"ymax": 0,
+		"showaxis": true,
 		"sort": true
 	};
 
 	var settings = {};
 	for(var p in defaults) {
 		settings[p] = (options[p] == null) ? defaults[p] : options[p];
+	}
+	
+	if(!settings.showaxis) {
+		settings.border = 0;
+		settings.padding = 0;
 	}
 
 	// collect stats on columns
@@ -59,7 +65,9 @@ function sequence_logo(element, width, height, columns, options) {
 			totalweight += weight;
 			ctx.save();
 			ctx.fillStyle = settings.colors[letter];
+			
 			ctx.translate(columnx, lettery);
+			
 			var scaley = (yheight * weight) / (settings.fontpixelheight * ymax);
 			var mt = ctx.measureText(letter);
 			var letterwidth = mt.width;
@@ -70,49 +78,54 @@ function sequence_logo(element, width, height, columns, options) {
 			lettery -= (weight * yheight) / ymax;
 		}
 		ctx.save();
-		ctx.fillStyle = settings.textcolor;
-		ctx.textAlign = "center";
-		ctx.textBaseline = "top";
-		ctx.font = settings.labelfont;
-		ctx.fillText((col + 1).toString(), columnx + columndelta/2, height-settings.border+settings.padding);
-		ctx.restore();
+		if(settings.showaxis) {
+			ctx.fillStyle = settings.textcolor;
+			ctx.textAlign = "center";
+			ctx.textBaseline = "top";
+			ctx.font = settings.labelfont;
+			ctx.fillText((col + 1).toString(), columnx + columndelta/2, height-settings.border+settings.padding);
+			ctx.restore();
+		}
 		columnx += columndelta;
+		
 	}
 	
-	// axis lines
-	ctx.beginPath();
-	ctx.moveTo((settings.border-(settings.padding*(2/3))), height-(settings.border-(settings.padding*(2/3))));
-	ctx.lineTo(width, height-(settings.border-(settings.padding*(2/3))));
-	ctx.stroke();
-	ctx.beginPath();
-	ctx.moveTo((settings.border-(settings.padding*(2/3)))+1, height-(settings.border-(settings.padding*(2/3))));
-	ctx.lineTo((settings.border-(settings.padding*(2/3)))+1, 0);
-	ctx.stroke();
+	if(settings.showaxis) {	
+		// axis lines
+		ctx.beginPath();
+		ctx.moveTo((settings.border-(settings.padding*(2/3))), height-(settings.border-(settings.padding*(2/3))));
+		ctx.lineTo(width, height-(settings.border-(settings.padding*(2/3))));
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.moveTo((settings.border-(settings.padding*(2/3)))+1, height-(settings.border-(settings.padding*(2/3))));
+		ctx.lineTo((settings.border-(settings.padding*(2/3)))+1, 0);
+		ctx.stroke();
 
-	// y-axis labels
-	ctx.fillStyle = settings.textcolor;
-	ctx.font = settings.labelfont;
-	ctx.textAlign = "right";
-	ctx.textBaseline = "top";
-	ctx.fillText(ymax.toPrecision(1), settings.border-settings.padding, 0);
-	ctx.textBaseline = "bottom";
-	ctx.fillText("0", settings.border-settings.padding, height-settings.border);
-	ctx.translate(settings.border-settings.padding, (height-settings.border)/2);
-	ctx.rotate(-Math.PI/2);
-	ctx.textAlign = "center";
-	ctx.textBaseline = "bottom";
-	ctx.fillText(settings.ylabel, 0, 0);
-
+		// y-axis labels
+		ctx.fillStyle = settings.textcolor;
+		ctx.font = settings.labelfont;
+		ctx.textAlign = "right";
+		ctx.textBaseline = "top";
+		ctx.fillText(ymax.toPrecision(1), settings.border-settings.padding, 0);
+		ctx.textBaseline = "bottom";
+		ctx.fillText("0", settings.border-settings.padding, height-settings.border);
+		ctx.translate(settings.border-settings.padding, (height-settings.border)/2);
+		ctx.rotate(-Math.PI/2);
+		ctx.textAlign = "center";
+		ctx.textBaseline = "bottom";
+		ctx.fillText(settings.ylabel, 0, 0);
+	}
+	
 	ctx.restore();
 	return element;
 }
 
-function PWM2jseqcol(PWM) {
+function PPM2jseqcol(PPM) {
 	// Convert an array of position weight matrix
 	// to the column format used in jseqlogo, validates 
 	// that nucleotide array are same length
 	//
-	// PWM format: 
+	// PPM format: 
 	//		{ A: [0.5, 0.2, 0, 0], C: [0.5, 0.1, 0.8, 0], T: [0, 0.7, 0.2, 0.3], G: [0, 0, 0, 0.7] };
 	//
 	// jseqlogo format:
@@ -123,9 +136,9 @@ function PWM2jseqcol(PWM) {
   //      [["A", 0], ["C", 0],  ["G", 1.4],  ["T", 0.6]],
 	//		];
 	var jseqcol = [];
-	if(PWM["A"].length == PWM["C"].length && PWM["C"].length == PWM["G"].length && PWM["G"].length == PWM["T"].length) {
-		for(i=0;i < PWM["A"].length; i++) {
-			var templist = [["A", (PWM["A"][i])*2], ["C", (PWM["C"][i]*2)], ["G", (PWM["G"][i]*2)], ["T", (PWM["T"][i]*2)]];
+	if(PPM["A"].length == PPM["C"].length && PPM["C"].length == PPM["G"].length && PPM["G"].length == PPM["T"].length) {
+		for(i=0;i < PPM["A"].length; i++) {
+			var templist = [["A", PPM["A"][i]], ["C", PPM["C"][i]], ["G", PPM["G"][i]], ["T", PPM["T"][i]]];
 			jseqcol.push(templist);
 		}
 			return jseqcol;
